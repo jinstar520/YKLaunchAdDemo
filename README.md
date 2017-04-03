@@ -4,6 +4,10 @@
 
 显示广告过程中的回调通过delegate，共有五个回调方法，使用delegate比block代码更加清晰，有更好的阅读性，虽然会多写几行代码。
 
+### cocoapodsan安装
+
+pod 'YKLaunchAd', '~> 1.0.2'
+
 ### YKLaunchAdDelegate
 
 @required
@@ -15,23 +19,23 @@
 ```	
 - (void)yk_willLoadAd:(YKLaunchAd *)launchAd {
 	// requestAdData表示从服务器请求广告数据
-   [self requestAdData:^(NSString *imgUrl, NSInteger duration) {
-        [launchAd setImageUrl:imgUrl countdown:duration skipType:YKSkipTypeTimerText options:YKWebImageUseNSURLCache ];
+   [self requestAdData:^(NSString *imgUrl) {
+        [launchAd setImageUrl:imgUrl skipType:YKSkipTypeTimerText options:YKWebImageUseNSURLCache ];
     }];
 }
 ```
 	
 - (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd adImage:(UIImage *)adImage adUrl:(NSURL *)adUrl
 
-	下载广告图完成后调用，在这里做修改adImage、countdown、adFrame等。
+	下载广告图完成后调用，在这里做修改adImage、countdown、adFrame等。如果要显示广告为5秒，一定要在此方法内对countdown赋值为5，这样才会是精确地显示5秒。
 	
-- (void)yk_willAdCountdownEnding
+- (void)yk_willAdCountdownEnding:(YKLaunchAd *)launchAd
 
 	倒计时结束回调，在此方法内进行界面跳转等操作。
 	
 @optional
 
-- (void)yk_didAdClicked
+- (void)yk_didAdClicked:(YKLaunchAd *)launchAd
 
 	点击广告视图回调，在此方法内跳转到广告页面。
 	
@@ -63,8 +67,7 @@
 
 	开始倒计时。调用此方法后，开始执行`yk_willLoadAd:(YKLaunchAd *)launchAd`方法
 	
-- (void)setImageUrl:(NSString *)imageUrl    
-          countdown:(NSInteger)countdown   
+- (void)setImageUrl:(NSString *)imageUrl       
            skipType:(YKSkipType)skipType   
             options:(YKWebImageOptions)options
             

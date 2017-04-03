@@ -22,12 +22,18 @@ static NSInteger const YKDefaultAdCountdown = 4;
 @property (nonatomic, strong) UIImageView *launchImageView;
 @property (nonatomic, strong) UIImageView *adImageView;
 @property (nonatomic, copy) dispatch_source_t countdownTimer;
+/**
+ 显示倒计时按钮类型，默认是YKSkipTypeNone
+ */
+@property (nonatomic, assign) YKSkipType skipType;
 
 @end
 
 @implementation YKLaunchAd {
     BOOL _adCountdownEnd;
     BOOL _adClick;
+    NSURL *_imageUrl;
+    NSInteger _adCountdown;
 }
 
 - (void)viewDidLoad {
@@ -39,6 +45,8 @@ static NSInteger const YKDefaultAdCountdown = 4;
     _skipType = YKSkipTypeNone;
     _adFrame = [UIScreen mainScreen].bounds;
     [self.view addSubview:self.launchImageView];
+    [self.view addSubview:self.adImageView];
+    [self.view addSubview:self.skipButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -63,24 +71,39 @@ static NSInteger const YKDefaultAdCountdown = 4;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setImageUrl:(NSString *)imageUrl
-          countdown:(NSInteger)countdown
+- (void)setImageUrl:(NSURL *)imageUrl {
+    [self setImageUrl:imageUrl skipType:YKSkipTypeTimerAndText options:YKWebImageUseNSURLCache];
+}
+
+- (void)setImageUrl:(NSURL *)imageUrl
+            options:(YKWebImageOptions)options
+{
+    [self setImageUrl:imageUrl skipType:YKSkipTypeTimerAndText options:options];
+}
+
+- (void)setImageUrl:(NSURL *)imageUrl
+           skipType:(YKSkipType)skipType
+{
+    [self setImageUrl:imageUrl skipType:skipType options:YKWebImageUseNSURLCache];
+}
+
+- (void)setImageUrl:(NSURL *)imageUrl
            skipType:(YKSkipType)skipType
             options:(YKWebImageOptions)options
 {
     if(_adCountdownEnd) return;
-    if([imageUrl checkUrlError]) return;
+    if([imageUrl.absoluteString checkUrlError]) return;
     
-    _countdown = countdown;
+    _imageUrl = imageUrl;
     _skipType = skipType;
     
-    [self.view addSubview:self.adImageView];
-    [self.view addSubview:self.skipButton];
-    [self adAnimate];
-    
-    [self.adImageView yk_setImageWithURL:[NSURL URLWithString:imageUrl] placeholder:nil options:options completion:^(UIImage *image, NSURL *url) {
+    [self.adImageView yk_setImageWithURL:imageUrl placeholder:nil options:options completion:^(UIImage *image, NSURL *url) {
+        self.adImageView.hidden = NO;
+        _skipButton.hidden = NO;
+        [self adImageViewTransitionAnimate];
+        
         self.adImage = image;
-        self.adImageUrl = url;
+        self.countdown = _adCountdown;
         
         if ([self.delegate respondsToSelector:@selector(yk_requestAdImageFinished:)]) {
             [self.delegate yk_requestAdImageFinished:self];
@@ -88,8 +111,8 @@ static NSInteger const YKDefaultAdCountdown = 4;
     }];
 }
 
-- (void)adAnimate {
-    CGFloat duration = self.countdown;
+- (void)adImageViewTransitionAnimate {
+    CGFloat duration = _adCountdown;
     duration = duration/4.0;
     if(duration > 1.0) duration = 1.0;
     [UIView animateWithDuration:duration animations:^{
@@ -104,10 +127,6 @@ static NSInteger const YKDefaultAdCountdown = 4;
         NSAssert(NO, @"delegate必须要实现yk_willLoadAd:。");
     }
     
-    if (![self.delegate respondsToSelector:@selector(yk_requestAdImageFinished:)]) {
-        NSAssert(NO, @"delegate必须要实现yk_requestAdImageFinished。");
-    }
-    
     if (![self.delegate respondsToSelector:@selector(yk_willAdCountdownEnding:)]) {
         NSAssert(NO, @"delegate必须要实现yk_willAdCountdownEnding。");
     } 
@@ -116,7 +135,7 @@ static NSInteger const YKDefaultAdCountdown = 4;
     [self refreshCountsownTimer];
 }
 
-#pragma mark - lazy
+#pragma mark - getter
 
 - (UIImageView *)launchImageView {
     if(_launchImageView == nil) {
@@ -134,6 +153,7 @@ static NSInteger const YKDefaultAdCountdown = 4;
         _adImageView.backgroundColor = [UIColor whiteColor];
         _adImageView.userInteractionEnabled = YES;
         _adImageView.alpha = 0.2;
+        _adImageView.hidden = YES;
         UITapGestureRecognizer *adTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(adTapAction:)];
         [_adImageView addGestureRecognizer:adTap];
     }
@@ -144,15 +164,27 @@ static NSInteger const YKDefaultAdCountdown = 4;
 - (UIButton *)skipButton {
     if (_skipButton == nil) {
         _skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _skipButton.hidden = YES;
         _skipButton.frame = YKSkipButtonFrame;
         [_skipButton setBackgroundImage:[UIImage imageWithBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.4] rect:_skipButton.frame radius:14] forState:UIControlStateNormal];
         _skipButton.titleLabel.font = [UIFont systemFontOfSize:13];
         [_skipButton addTarget:self action:@selector(skipAction) forControlEvents:UIControlEventTouchUpInside];
         if(!self.countdown || self.countdown<=0) self.countdown = YKDefaultAdCountdown;
-        if(!_skipType) _skipType = YKSkipTypeTimerText;
+        if(!_skipType) _skipType = YKSkipTypeTimerAndText;
     }
     
     return _skipButton;
+}
+
+- (NSURL *)adImageUrl {
+    return [_imageUrl copy];
+}
+
+#pragma mark - setter
+
+- (void)setCountdown:(NSInteger)countdown {
+    _countdown = countdown;
+    _adCountdown = countdown;
 }
 
 - (void)setAdFrame:(CGRect)adFrame {
@@ -160,6 +192,11 @@ static NSInteger const YKDefaultAdCountdown = 4;
     if (_adImageView) {
         _adImageView.frame = _adFrame;
     }
+}
+
+- (void)setSkipType:(YKSkipType)skipType {
+    _skipType = skipType;
+    [self skipButtonTitleWithDuration:self.countdown];
 }
 
 #pragma mark - Click Action
@@ -182,9 +219,11 @@ static NSInteger const YKDefaultAdCountdown = 4;
 #pragma mark - other
 
 - (void)skipButtonTitleWithDuration:(NSInteger)duration {
+    _skipButton.hidden = (_skipType == YKSkipTypeNone);
+    
     switch (_skipType) {
         case YKSkipTypeNone:
-            _skipButton.hidden = YES;
+            
             
             break;
         case YKSkipTypeTimer:
@@ -195,7 +234,7 @@ static NSInteger const YKDefaultAdCountdown = 4;
             [_skipButton setTitle:@"跳过" forState:UIControlStateNormal];
             
             break;
-        case YKSkipTypeTimerText:
+        case YKSkipTypeTimerAndText:
             [_skipButton setTitle:[NSString stringWithFormat:@"%ld 跳过", (long)duration] forState:UIControlStateNormal];
             
             break;

@@ -10,6 +10,8 @@
 #import "YKLaunchAd.h"
 #import "ViewController.h"
 
+#define DefaultCountdown 4
+
 @interface AppDelegate ()<YKLaunchAdDelegate>
 
 @end
@@ -18,7 +20,9 @@
 
 - (void)yk_willLoadAd:(YKLaunchAd *)launchAd {
     [self requestAdData:^(NSString *imgUrl, NSInteger duration) {
-        [launchAd setImageUrl:imgUrl countdown:duration skipType:YKSkipTypeTimerText options:YKWebImageUseNSURLCache ];
+        launchAd.adlinkUrl = [NSURL URLWithString:@"1234"];
+        launchAd.countdown = DefaultCountdown;
+        [launchAd setImageUrl:[NSURL URLWithString:imgUrl]];
     }];
 }
 
@@ -64,8 +68,7 @@
     launchAd.delegate = self;
     
     launchAd.adFrame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width , [UIScreen mainScreen].bounds.size.height-100);
-    launchAd.countdown = 6;
-    launchAd.skipType = YKSkipTypeTimer;
+    launchAd.countdown = DefaultCountdown;
     launchAd.adClickCountdownEnding = NO;
     [launchAd start];
     

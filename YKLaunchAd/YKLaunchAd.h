@@ -23,18 +23,18 @@
 - (void)yk_willLoadAd:(YKLaunchAd *)launchAd;
 
 /**
- 下载广告图完成后调用，在这里做修改adImage、countdown、adFrame等
-
- @param launchAd self
- */
-- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd;
-
-/**
  倒计时结束回调
  */
 - (void)yk_willAdCountdownEnding:(YKLaunchAd *)launchAd;
 
 @optional
+
+/**
+ 下载广告图完成后调用，在这里做修改adImage、countdown、adFrame、skipType等
+ 
+ @param launchAd self
+ */
+- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd;
 
 /**
  点击广告回调
@@ -51,10 +51,10 @@
 @end
 
 typedef NS_ENUM(NSInteger, YKSkipType) {
-    YKSkipTypeNone       = 1,        //无
-    YKSkipTypeTimer      = 2,        //倒计时
-    YKSkipTypeText       = 3,        //跳过
-    YKSkipTypeTimerText  = 4,        //倒计时+跳过
+    YKSkipTypeNone          = 1,        //无
+    YKSkipTypeTimer         = 2,        //倒计时
+    YKSkipTypeText          = 3,        //跳过
+    YKSkipTypeTimerAndText  = 4,        //倒计时+跳过
 };
 
 @interface YKLaunchAd : UIViewController
@@ -73,10 +73,7 @@ typedef NS_ENUM(NSInteger, YKSkipType) {
  */
 @property (nonatomic, assign) NSInteger countdown;
 
-/**
- 显示倒计时按钮类型，默认是YKSkipTypeTimerText
- */
-@property (nonatomic, assign) YKSkipType skipType;
+
 
 /**
  adClickCountdownEnding默认值为YES。adClickCountdownEnding=YES，当从广告页返回后，无论countdown是否为0，都会调用yk_willAdCountdownEnding；adClickCountdownEnding=no，如果countdown > 0，会继续倒计时，直到countdown==0时，再调用yk_willAdCountdownEnding。
@@ -88,12 +85,21 @@ typedef NS_ENUM(NSInteger, YKSkipType) {
  */
 @property (nonatomic, copy) NSString *launchScreenName;
 
-@property (nonatomic, copy) NSURL *adImageUrl;
+/**
+ 广告图片下载地址
+ */
+@property (nonatomic, copy, readonly) NSURL *adImageUrl;
 
+/**
+ 广告图片点击内容地址，需要赋值
+ */
 @property (nonatomic, copy) NSURL *adlinkUrl;
 
 @property (nonatomic, strong) UIImage *adImage;
 
+/**
+ 如果广告数据不止adlinkUrl和adImageUrl，用adRawData保存
+ */
 @property (nonatomic, copy) NSDictionary *adRawData;
 
 /**
@@ -102,15 +108,38 @@ typedef NS_ENUM(NSInteger, YKSkipType) {
 - (void)start;
 
 /**
- 下载广告图
+ 加载广告图，skipType为YKSkipTypeTimerAndText；options为YKWebImageUseNSURLCache
 
  @param imageUrl 广告图url
- @param countdown 倒计时长
- @param skipType 显示倒计时按钮类型
- @param options 广告图加载类型
  */
-- (void)setImageUrl:(NSString *)imageUrl
-          countdown:(NSInteger)countdown
+- (void)setImageUrl:(NSURL *)imageUrl;
+
+/**
+ 加载广告图,skipType为YKSkipTypeTimerAndText
+
+ @param imageUrl 广告图url
+ @param options 加载图片类型
+ */
+- (void)setImageUrl:(NSURL *)imageUrl
+            options:(YKWebImageOptions)options;
+
+/**
+ 加载广告图,options为YKWebImageUseNSURLCache
+
+ @param imageUrl 广告图url
+ @param skipType 跳过按钮显示类型
+ */
+- (void)setImageUrl:(NSURL *)imageUrl
+           skipType:(YKSkipType)skipType;
+
+/**
+ 加载广告图
+
+ @param imageUrl 广告图url
+ @param skipType 跳过按钮显示类型，默认不显示
+ @param options  默认值YKWebImageUseNSURLCache
+ */
+- (void)setImageUrl:(NSURL *)imageUrl
            skipType:(YKSkipType)skipType
             options:(YKWebImageOptions)options;
 
