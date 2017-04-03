@@ -1,5 +1,4 @@
 # YKLaunchAdDemo
---
 
 一个支持显示GIF、静态图，自定义广告视图frame，自带图片下载、缓存，支持自定义广告结束转场动画，支持iPhone、iPad的开机启动广告。
 
