@@ -26,22 +26,20 @@
  下载广告图完成后调用，在这里做修改adImage、countdown、adFrame等
 
  @param launchAd self
- @param adImage 广告图
- @param adUrl 广告图Url
  */
-- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd adImage:(UIImage *)adImage adUrl:(NSURL *)adUrl;
+- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd;
 
 /**
  倒计时结束回调
  */
-- (void)yk_willAdCountdownEnding;
+- (void)yk_willAdCountdownEnding:(YKLaunchAd *)launchAd;
 
 @optional
 
 /**
  点击广告回调
  */
-- (void)yk_didAdClicked;
+- (void)yk_didAdClicked:(YKLaunchAd *)launchAd;
 
 /**
  自定义倒计时结束后跳转动画
@@ -89,6 +87,14 @@ typedef NS_ENUM(NSInteger, YKSkipType) {
  launchScreen.storyboard的文件名，默认从Assets中读取启动图。当启动图需要从launchScreen.storyboard读取时进行赋值
  */
 @property (nonatomic, copy) NSString *launchScreenName;
+
+@property (nonatomic, copy) NSURL *adImageUrl;
+
+@property (nonatomic, copy) NSURL *adlinkUrl;
+
+@property (nonatomic, strong) UIImage *adImage;
+
+@property (nonatomic, copy) NSDictionary *adRawData;
 
 /**
  开始倒计时

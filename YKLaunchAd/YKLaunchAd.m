@@ -79,8 +79,11 @@ static NSInteger const YKDefaultAdCountdown = 4;
     [self adAnimate];
     
     [self.adImageView yk_setImageWithURL:[NSURL URLWithString:imageUrl] placeholder:nil options:options completion:^(UIImage *image, NSURL *url) {
-        if ([self.delegate respondsToSelector:@selector(yk_requestAdImageFinished:adImage:adUrl:)]) {
-            [self.delegate yk_requestAdImageFinished:self adImage:image adUrl:url];
+        self.adImage = image;
+        self.adImageUrl = url;
+        
+        if ([self.delegate respondsToSelector:@selector(yk_requestAdImageFinished:)]) {
+            [self.delegate yk_requestAdImageFinished:self];
         }
     }];
 }
@@ -101,11 +104,13 @@ static NSInteger const YKDefaultAdCountdown = 4;
         NSAssert(NO, @"delegate必须要实现yk_willLoadAd:。");
     }
     
-    if ([self.delegate respondsToSelector:@selector(yk_willAdCountdownEnding)]) {
-        [self.delegate yk_willAdCountdownEnding];
-    } else {
-        NSAssert(NO, @"delegate必须要实现yk_willAdCountdownEnding。");
+    if (![self.delegate respondsToSelector:@selector(yk_requestAdImageFinished:)]) {
+        NSAssert(NO, @"delegate必须要实现yk_requestAdImageFinished。");
     }
+    
+    if (![self.delegate respondsToSelector:@selector(yk_willAdCountdownEnding:)]) {
+        NSAssert(NO, @"delegate必须要实现yk_willAdCountdownEnding。");
+    } 
     
     [[UIApplication sharedApplication].delegate window].rootViewController = self;
     [self refreshCountsownTimer];
@@ -161,8 +166,8 @@ static NSInteger const YKDefaultAdCountdown = 4;
 
 - (void)adTapAction:(UITapGestureRecognizer *)tap {
     if (self.countdown > 0) {
-        if ([self.delegate respondsToSelector:@selector(yk_didAdClicked)]) {
-            [self.delegate yk_didAdClicked];
+        if ([self.delegate respondsToSelector:@selector(yk_didAdClicked:)]) {
+            [self.delegate yk_didAdClicked:self];
         }
     }
 }
@@ -287,8 +292,8 @@ static NSInteger const YKDefaultAdCountdown = 4;
 
 - (void)adCountdownEnding {
     _adCountdownEnd = YES;
-    if ([self.delegate respondsToSelector:@selector(yk_willAdCountdownEnding)]) {
-        [self.delegate yk_willAdCountdownEnding];
+    if ([self.delegate respondsToSelector:@selector(yk_willAdCountdownEnding:)]) {
+        [self.delegate yk_willAdCountdownEnding:self];
     }
 }
 

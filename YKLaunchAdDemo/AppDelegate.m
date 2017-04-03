@@ -22,17 +22,17 @@
     }];
 }
 
-- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd adImage:(UIImage *)adImage adUrl:(NSURL *)adUrl {
+- (void)yk_requestAdImageFinished:(YKLaunchAd *)launchAd {
     //在这里做些处理
     launchAd.adFrame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height-100);
     launchAd.countdown = 6;
 }
 
-- (void)yk_willAdCountdownEnding {
+- (void)yk_willAdCountdownEnding:(YKLaunchAd *)launchAd {
     self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[ViewController alloc] init]];
 }
 
-- (void)yk_didAdClicked {
+- (void)yk_didAdClicked:(YKLaunchAd *)launchAd {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.baidu.com"] options:@{} completionHandler:^(BOOL success) {
         
     }];

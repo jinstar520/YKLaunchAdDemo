@@ -7,6 +7,6 @@ Pod::Spec.new do |s|
   s.authors      = { "jinstar520" => "jinstar520@yeah.net"}
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/jinstar520/YKLaunchAdDemo.git", :tag => s.version }
-  s.source_files = "YKLaunchAd", "*.{h,m}"
+  s.source_files = "YKLaunchAd/**/*.{h,m}"
   s.requires_arc = true
 end
