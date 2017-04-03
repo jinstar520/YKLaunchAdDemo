@@ -72,9 +72,11 @@
 	
 ### 使用示例：
 
+```
 YKLaunchAd *launchAd = [[YKLaunchAd alloc] init];
 launchAd.delegate = self;    
 [launchAd start];
+```
 
 
 
