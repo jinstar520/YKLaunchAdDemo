@@ -258,8 +258,7 @@
 				TargetAttributes = {
 					CF2981F01E9146EA0013F96B = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = S8NE6W7L6S;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					CF2982091E9146EA0013F96B = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -484,11 +483,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: HangZhou Hongdoujiao Network Technology Co., Ltd. (S8NE6W7L6S)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				DEVELOPMENT_TEAM = S8NE6W7L6S;
 				INFOPLIST_FILE = YKLaunchAdDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vct.redbeans;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "cd343107-0e34-49e6-b1de-7f3c684718ba";
+				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: com.vct.redbeans";
 			};
 			name = Debug;
 		};
@@ -497,11 +500,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				DEVELOPMENT_TEAM = S8NE6W7L6S;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: HangZhou Hongdoujiao Network Technology Co., Ltd. (S8NE6W7L6S)";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = YKLaunchAdDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vct.redbeans;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "cd343107-0e34-49e6-b1de-7f3c684718ba";
+				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: com.vct.redbeans";
 			};
 			name = Release;
 		};
