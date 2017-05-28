@@ -258,6 +258,7 @@
 				TargetAttributes = {
 					CF2981F01E9146EA0013F96B = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = S8NE6W7L6S;
 						ProvisioningStyle = Manual;
 					};
 					CF2982091E9146EA0013F96B = {
