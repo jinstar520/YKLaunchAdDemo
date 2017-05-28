@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "YKLaunchAd"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "几行代码接入启动页广告，自带图片下载、缓存功能，无任何第三方依赖，支持GIF、自定义广告frame，支持自定义广告结束转场动画，支持iPhone/iPad等功能"
   s.homepage     = "https://github.com/jinstar520/YKLaunchAdDemo"
   s.license      = { :type => "MIT", :file => "LICENSE" }
